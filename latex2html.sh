@@ -1,3 +1,5 @@
+Rscript movefiles.R 
+
 latex -interaction=nonstopmode main
 bibtex main
 htlatex main
