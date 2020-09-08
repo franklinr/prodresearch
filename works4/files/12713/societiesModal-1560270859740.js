@@ -1,0 +1,9 @@
+function calculateSocietiesLogosModalDimensions(){let $modal=$("#allSocietiesModal");if($modal&&$modal.size()>0){let $docWidth=document.documentElement.clientWidth;let headerElement=$(".headerContainer")[0];$modal.width(headerElement.getBoundingClientRect().width);$modal.css({"left":"0px"});let $xOffset=$modal.offset().left-headerElement.getBoundingClientRect().left;if($xOffset>0){$modal.css({"left":-$xOffset+"px"});}
+let $blockElements=$(".headerContainer .societyLogo, .societyNameContainer");if($blockElements&&$blockElements.size()>0){let $logoWidth=$blockElements.width();for(i=1;i<=8;i++){let $row=$(".allPublicationPartnersContent #row"+i);let $societiesPerRow=$row.find('.societyImageLink');if($societiesPerRow.size()>0){$row.css({"margin-left":(headerElement.getBoundingClientRect().width-10-($logoWidth+2)*$societiesPerRow.size())/2+"px"});}}}}};function showModal(){$("#allSocietiesModal").css({"display":"block"});$("#showAllSocietiesBtn").addClass("containerSelected");$("#allPubPartnersBoxText > i").removeClass("arrowDown");$("#allPubPartnersBoxText > i").addClass("arrowUp");calculateSocietiesLogosModalDimensions();};function hideModal(){$("#allSocietiesModal").css({"display":"none"});$("#showAllSocietiesBtn").removeClass("containerSelected");$("#allPubPartnersBoxText > i").removeClass("arrowUp");$("#allPubPartnersBoxText > i").addClass("arrowDown");};function setSocietiesLogosModalBahavior(){let btn=document.getElementById("showAllSocietiesBtn");if(btn){btn.onclick=function(){if($("#allSocietiesModal").is(":visible"))
+hideModal();else
+showModal();}
+btn.onkeypress=function(e){if(e.keyCode===13){if($("#allSocietiesModal").is(":visible"))
+hideModal();else
+showModal();}}}
+let spanClose=document.getElementsByClassName("closeModalButton")[0];if(spanClose){spanClose.onclick=function(){hideModal();}
+spanClose.onkeypress=function(e){if(e.keyCode===13){hideModal();}}}};$(window).resize(function(){calculateSocietiesLogosModalDimensions();});

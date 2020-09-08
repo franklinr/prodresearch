@@ -1,0 +1,3 @@
+window.CM8DispatcherApps=window.CM8DispatcherApps||[];
+window.CM8DispatcherApps.push('http://sage.checkm8.com/adam/detected?cat=social_science_humanities.language_linguistics.fla&page=7290824061731135&serial=1000:1:A&&LOC=http://fla.sagepub.com/content/29/4/427.short&WIDTH=1132&HEIGHT=0&WIDTH_RANGE=WR_D&DATE=01130607&HOUR=06&RES=RS27&RESW=1366&RESH=768&ORD=5407028176384017&req=fr&&86.178.186.172&~=&');
+document.write("<SCR"+"IPT TYPE='text/javascript' SRC='http://sage.checkm8.com/dispatcher_scripts/browserDataDetect.js?Ver=99'></SCR"+"IPT>");

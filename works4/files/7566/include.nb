@@ -1,0 +1,1674 @@
+
+
+
+
+
+
+  
+    
+
+
+
+
+// NextBio name space 
+var nbApi = {debug: false};
+
+nbApi.apiKey = "F70C5A70-D194-4150-9F99-C8FC2266B65F";
+nbApi.nameSpace = "nbApi";
+nbApi.debug = false;
+nbApi.sessionId = "53a452ed34184ffdab41f706be02a1a4";
+nbApi.timeStamp = "c604f8b84921894edcbc19acb5233ad2";
+nbApi.timeoutStamp = "4d5cf4bf56670591";
+nbApi.urlContext = "http://sciencedirect.nextbio.com/e";
+nbApi.imgContext = "http://sciencedirect.nextbio.com/e/s/img3";
+
+nbApi.debugMode = function(debug)
+{           
+  nbApi.setDebugMode(debug);
+};
+nbApi.setDebugMode = function(debug)
+{           
+  nbApi.debug = debug == true;
+};
+nbApi.getDebugMode = function()
+{           
+  return nbApi.debug == true;
+};
+
+
+  
+    
+
+
+
+
+  // NextBio API utility functions
+  // requires jsApi.jsp
+  
+  // LoadFrame(config, bAlert) - load from server in an iFrame 
+  // configuration parameters:
+  // config.target - required. Id of a div, span, td, etc. to receive results loaded from server  
+  // config.url - required. URL of a web service processing AJAX call  
+  // config.query - optional. List of parameters for the URL (see above)
+  // config.success - optional. A callback function that will be excuted in case of a successfull call, after results are loaded to the target 
+  //    success(args) - where args is described below. 
+  // config.failure - optional. A callback function that will be executed in case of a failed call:  
+  //    failure(args) - where args is described below. 
+  // config.args - optional. A string that will be passsed as a parameter to success() and/or failure() callbacks if either one is specified.
+  // bAlert - optional. True if we want to display alerts.
+  nbApi.loadFrame = function(config)
+  {
+    var bAlert = nbApi.getDebugMode();
+    if (config == null)
+    {
+      if (bAlert)
+        alert("Nextbio API: No configuration object.");
+      return false;
+    }
+    if (config.url == null)
+    {
+      if (bAlert)
+        alert("Nextbio API: Configuration object contains no URL.");
+      return false;
+    }   
+    var target = document.getElementById(config.target);
+    if (target == null)
+    {
+      if (bAlert)
+        alert("Nextbio API: Target with id=" + congig.target + " was not found on this page.");
+      return;
+    } 
+    var id = "nbTagCloud_" + config.target;
+    var url = config.url;
+    if (config.query != null)
+      url += "?" + config.query; 
+    var target = document.getElementById(config.target);
+    target.innerHTML = "<iframe id=\'" + id + "\' style=\'" + config.style + "\'></iframe>";
+    target = document.getElementById(id);
+    target.src = url;
+  };
+
+  // LoadScript(config, bAlert) - load from server as a javascript script
+  // configuration parameters:
+  // config.target - required. Id of a div, span, td, etc. to receive results loaded from server  
+  // config.url - required. URL of a web service processing AJAX call  
+  // config.query - optional. List of parameters for the URL (see above)
+  // config.success - optional. A callback function that will be excuted in case of a successfull call, after results are loaded to the target 
+  //    success(args) - where args is described below. 
+  // config.failure - optional. A callback function that will be executed in case of a failed call:  
+  //    failure(args) - where args is described below. 
+  // config.args - optional. A string that will be passsed as a parameter to success() and/or failure() callbacks if either one is specified.
+  // bAlert - optional. True if we want to display alerts.
+  nbApi.loadScript = function(config)
+  {
+    var bAlert = nbApi.getDebugMode();
+    if (config == null)
+    {
+      if (bAlert)
+        alert("Nextbio API: No configuration object.");
+      return false;
+    }
+    var target = document.getElementById(config.target);
+    if (target == null)
+    {
+      if (bAlert)
+        alert("Nextbio API: Target doesn't exist.");
+      return false;
+    }
+    if (config.url == null)
+    {
+      if (bAlert)
+        alert("Nextbio API: Configuration object contains no URL.");
+      return false;
+    }                                                      
+    var message;
+    if (config.message != null)
+    {
+      if (config.messageStyle == null)
+        message = config.message; 
+      else
+        message = '<span style="' + config.messageStyle + '">' + config.message + '</span>';
+      nbApi.setInnerHtml(config.target, message);
+      target.style.cursor = "wait";
+    }
+    var url = config.url;
+    var params = "containerId=" + config.containerId + "&targetId=" + config.target + "&callback=" + config.callbackName; 
+  // setup timeout callback
+    var timeoutId = null;
+    if (config.timeout != null && config.timeout > 0)
+    {
+      timeoutId = nbApi.createId("nextbioTimeout");  
+      var timeout = setTimeout(function(){nbApi.loadTimeoutHandler(config.target, timeoutId, config.timeoutCallback)}, config.timeout);
+      target.setAttribute(timeoutId, timeout);
+      params += "&timeoutId=" + timeoutId;
+      if (config.timeoutTerminate == true)
+      {
+        params += "&timeoutTerminate=true";
+      }
+    }  
+  
+    if (config.query == null)
+      config.query = params;
+    else
+      config.query += "&" + params;
+    url += "?" + config.query; 
+    target.nextbioScriptCallback = config.callback;
+    nbApi.importScript(url, config.iFrameId);
+  };
+
+  nbApi.updateTargetHTML = function(json)
+  {
+    if (json == null || json.target == null) 
+      return;
+    var target = document.getElementById(json.target);
+    if (target == null)
+      return;
+  
+    if (json.timeoutId != null)
+    {
+      var timeoutId = target.getAttribute(json.timeoutId);
+      if (timeoutId == null || timeoutId.length == 0)
+      {
+        if (json.timeoutTerminate == true)
+        {
+          return;
+        }
+      }
+      else
+      {
+        clearTimeout(timeoutId);
+        target.setAttribute(json.timeoutId, null);
+      }
+    } 
+    target.innerHTML = "";
+    target.nextbioIsLoaded = false;
+  
+    var bLoaded = json.response != null && json.response.length > 0;
+    if (bLoaded)
+    {
+      target.nextbioIsLoaded = true;
+      if (target.nextbioHeader != null && target.nextbioHeader.length > 0)
+      {
+        var header = document.createElement("div");
+        if (target.nextbioHeaderClassName != null)
+          header.className = target.nextbioHeaderClassName;
+        header.innerHTML = target.nextbioHeader;
+        target.appendChild(header);
+      }
+      var body = document.createElement("div");
+      body.className = target.nextbioTargetClassName;
+      body.innerHTML = json.response;
+      target.appendChild(body);
+      if (target.nextbioFooter != null && target.nextbioFooter.length > 0)
+      {
+        var footer = document.createElement("div");
+        if (target.nextbioFooterClassName != null)
+          footer.className = target.nextbioFooterClassName;
+        footer.innerHTML = target.nextbioFooter;
+        target.appendChild(footer);
+      }
+    }
+    target.style.cursor = "auto";
+  
+    if (target.nextbioScriptCallback != null)
+      target.nextbioScriptCallback(json.target, bLoaded, json);
+  };
+  nbApi.updateTargetText = function(json)
+  {
+    if (json == null || json.target == null || json.response == null)
+      return;
+    var target = document.getElementbyId(json.target);
+    if (json.timeoutId != null)
+    {
+      var timeoutId = target.getAttribute(json.timeoutId);
+      if (timeoutId == null || timeoutId.length == 0)
+      {
+        if (json.timeoutTerminate == true)
+        {
+          return;
+        }
+      }
+      else
+      {
+        clearTimeout(timeoutId);
+        target.setAttribute(json.timeoutId, null);
+      }
+    } 
+    target.innerText = json.response;
+    target.textContent = json.response;
+    target.style.cursor = "auto";
+  };
+  
+  nbApi.setInnerHtml = function(id, html)
+  {
+    if (id == null || html == null)
+      return;
+    var el = document.getElementById(id);
+    if (el == null)
+      return;
+    el.innerHTML = html;
+  };
+  nbApi.setInnerText = function(id, text)
+  {
+    if (id == null || text == null)
+      return;
+    var el = document.getElementById(id);
+    if (el == null)
+      return;
+    el.innerText = text;
+    el.textContent = text;
+  };
+  nbApi.getInnerText = function(obj)
+  {
+    if (obj == null)
+      return null;
+    var el = obj;
+    if (typeof(obj) != "object")
+    {
+      el = document.getElementById(obj);
+    }
+    if (el == null)
+      return null;
+    if (el.innerText)
+      return el.innerText;
+    else
+      return el.textContent;
+  };
+  nbApi.setAttr = function(id, attr, text)
+  {
+    if (id == null ||attr == null || text == null)
+      return;
+    var el = document.getElementById(id);
+    if (el == null)
+      return;
+    el.setAttribute(attr, text);
+  };
+  nbApi.normalizeString = function(str)
+  {
+    if (str == null)
+      return "";
+    str = str.replace(/^\s+/, "");  
+    str = str.replace(/\s+$/, "");  
+    str = str.replace(/\s+/g, " ");
+    return str;  
+  };
+  nbApi.trim = function(str)
+  {
+    if (str == null)
+      return "";
+    str = str.replace(/^\s+/, "");  
+    str = str.replace(/\s+$/, "");  
+    return str;  
+  };
+  // Adds one or more CSS classes to the element. Duplicate classes are automatically filtered out.
+  nbApi.addClass = function(element, newClassName)
+  {
+    if (element == null)
+      return;
+    var className = element.className;
+    if (className == null || className.length == 0)
+    {
+      element.className = newClassName;
+      return;
+    }
+    var nameArray = element.className.split(/\s+/);
+    var out = newClassName;
+    for (i = 0; i < nameArray.length; i++)
+    {
+      if (nameArray[i] != newClassName)
+      {
+        out += " " + nameArray[i];
+      }
+      
+    }
+    out = nbApi.trim(out);
+    element.className = out;
+  };
+  nbApi.removeClass = function(element, className)
+  {
+    if (element == null)
+      return;
+    if (className == null)
+      return;
+  
+    var nameArray = element.className.split(/\s+/);
+    var out = "";
+    for (i = 0; i < nameArray.length; i++)
+    {
+      if (nameArray[i] != className)
+      {
+        if (i > 0)
+          out += " ";
+        out += nameArray[i];
+      }
+      
+    }
+    out = nbApi.trim(out);
+    if (out.length > 0)
+      element.className = out;
+    else
+      element.className = null;
+  };
+  
+  nbApi.getWindowHeight = function() 
+  {
+  	var myHeight = 0;
+     if( typeof( window.innerWidth ) == 'number' ) {
+       //Non-IE
+       myHeight = window.innerHeight;
+     } else if( document.documentElement &&
+         ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+       //IE 6+ in 'standards compliant mode'
+       myHeight = document.documentElement.clientHeight;
+     } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+       //IE 4 compatible
+       myHeight = document.body.clientHeight;
+     }
+     return myHeight;
+  };
+  
+  nbApi.getWindowWidth = function() 
+  {
+  	var myWidth = 0;
+     if( typeof( window.innerWidth ) == 'number' ) {
+       //Non-IE
+       myWidth = window.innerWidth;
+     } else if( document.documentElement &&
+         ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+       //IE 6+ in 'standards compliant mode'
+       myWidth = document.documentElement.clientWidth;
+     } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+       //IE 4 compatible
+       myWidth = document.body.clientWidth;
+     }
+     return myWidth;
+  };
+  
+  nbApi.getElementLeft = function(eElement) 
+  {
+     if (!eElement && this)                    // if argument is invalid
+     {                                         // (not specified, is null or is 0)
+        eElement = this;                       // and function is a method
+     }                                         // identify the element as the method owner
+  
+     var bIE = document.all ? true : false; // initialize var to identify IE
+  
+     var nLeftPos = eElement.offsetLeft;       // initialize var to store calculations
+     var eParElement = eElement.offsetParent;  // identify first offset parent element
+  
+     while (eParElement != null)
+     {                                         // move up through element hierarchy
+  
+        if(bIE)                             // if browser is IE, then...
+        {
+           if( (eParElement.tagName != "TABLE") && (eParElement.tagName != "BODY") )
+           {                                   // if parent is not a table or the body, then...
+              nLeftPos += eParElement.clientLeft; // append cell border width to calcs
+           }
+        }
+        else                                   // if browser is Gecko, then...
+        {
+           if(eParElement.tagName == "TABLE")  // if parent is a table, then...
+           {                                   // get its border as a number
+              var nParBorder = parseInt(eParElement.border);
+              if(isNaN(nParBorder))            // if no valid border attribute, then...
+              {                                // check the table's frame attribute
+                 var nParFrame = eParElement.getAttribute('frame');
+                 if(nParFrame != null)         // if frame has ANY value, then...
+                 {
+                    nLeftPos += 1;             // append one pixel to counter
+                 }
+              }
+              else if(nParBorder > 0)          // if a border width is specified, then...
+              {
+                 nLeftPos += nParBorder;       // append the border width to counter
+              }
+           }
+        }
+        nLeftPos += eParElement.offsetLeft;    // append left offset of parent
+        eParElement = eParElement.offsetParent; // and move up the element hierarchy
+     }                                         // until no more offset parents exist
+     if (scroll) {
+     		eParElement = eElement;
+     		while (eParElement) {
+     			if (eParElement.scrollLeft) {
+     				nLeftPos -= eParElement.scrollLeft;
+     			}
+     			eParElement = eParElement.parentNode;
+     		}
+     }
+     return nLeftPos;                          // return the number calculated
+  };
+  
+  
+  // get the top offset of the element.  If scroll is true, take scrolling into account
+  nbApi.getElementTop = function(eElement, scroll) 
+  {
+     if (!eElement && this)                    // if argument is invalid
+     {                                         // (not specified, is null or is 0)
+        eElement = this;                       // and function is a method
+     }                                         // identify the element as the method owner
+  
+     var bIE = document.all ? true : false; // initialize var to identify IE
+  
+     var nTopPos = eElement.offsetTop;         // initialize var to store calculations
+     var eParElement = eElement.offsetParent;  // identify first offset parent element
+  
+     while (eParElement != null)
+     {                                         // move up through element hierarchy
+        if(bIE)                             // if browser is IE, then...
+        {
+           if( (eParElement.tagName != "TABLE") && (eParElement.tagName != "BODY") )
+           {                                   // if parent a table cell, then...
+              nTopPos += eParElement.clientTop; // append cell border width to calcs
+           }
+        }
+        else                                   // if browser is Gecko, then...
+        {
+           if(eParElement.tagName == "TABLE")  // if parent is a table, then...
+           {                                   // get its border as a number
+              var nParBorder = parseInt(eParElement.border);
+              if(isNaN(nParBorder))            // if no valid border attribute, then...
+              {                                // check the table's frame attribute
+                 var nParFrame = eParElement.getAttribute('frame');
+                 if(nParFrame != null)         // if frame has ANY value, then...
+                 {
+                    nTopPos += 1;              // append one pixel to counter
+                 }
+              }
+              else if(nParBorder > 0)          // if a border width is specified, then...
+              {
+                 nTopPos += nParBorder;        // append the border width to counter
+              }
+           }
+        }
+  
+        nTopPos += eParElement.offsetTop;      // append top offset of parent
+        eParElement = eParElement.offsetParent; // and move up the element hierarchy
+     }                                         // until no more offset parents exist
+     if (scroll) {
+     		eParElement = eElement;
+     		while (eParElement) {
+     			if (eParElement.scrollTop) {
+     				nTopPos -= eParElement.scrollTop;
+     			}
+     			eParElement = eParElement.parentNode;
+     		}
+     }
+     return nTopPos;                           // return the number calculated
+  };
+  // get scroll factor for the element
+  nbApi.getScrollLeft = function()
+  {
+    if (typeof( window.pageXOffset ) == 'number')
+      return window.pageXOffset;
+    if (document.body != null && document.body.scrollLeft)
+      return document.body.scrollLeft;  
+    if (document.documentElement != null && document.documentElement.scrollLeft)
+      return document.documentElement.scrollLeft;
+    return 0;    
+  };
+  
+  nbApi.getScrollTop = function()
+  {
+    if (typeof( window.pageYOffset ) == 'number')
+      return window.pageYOffset;
+    if (document.body != null && document.body.scrollTop)
+      return document.body.scrollTop;  
+    if (document.documentElement != null && document.documentElement.scrollTop)
+      return document.documentElement.scrollTop;
+    return 0;    
+  };
+  
+  nbApi.onEvent = function(event, popupObj, param, extra)
+  {
+    if (event == null || popupObj == null)
+      return;
+    var containerId = null;
+    var isObj = typeof(popupObj) == "object";
+    if (isObj == true)
+      containerId = popupObj.containerId;
+    else
+      containerId = popupObj;
+    if (containerId == null)
+      return;
+    var container = document.getElementById(containerId);
+    if (container == null)
+      return;  
+    if (event.type.toLowerCase() == "click")
+    {
+      if (container.nextbioOnClick != null) 
+      {
+        if (isObj == true)
+          return container.nextbioOnClick(event, popupObj);
+        else
+          return container.nextbioOnClick(event, containerId, param, extra, container.nextbioUrlContext);
+      }
+    }
+    else if (event.type.toLowerCase() == "mouseover")
+    {
+      if (container.nextbioOnMouseOver != null)
+      {
+        if (isObj == true)
+          container.nextbioOnMouseOver(event, popupObj);
+        else
+          container.nextbioOnMouseOver(event, containerId, param, extra, container.nextbioUrlContext);
+      }
+    }
+    else if (event.type.toLowerCase() == "mouseout")
+    {
+      if (container.nextbioOnMouseOut != null)
+      {
+        if (isObj == true)
+          container.nextbioOnMouseOut(event, popupObj);
+        else
+          container.nextbioOnMouseOut(event, containerId, param, extra, container.nextbioUrlContext);
+      }
+    }
+  };
+  nbApi.showFrame = function(event, popupObj, param, extra, urlContext)
+  {
+    if (event == null || popupObj == null)
+      return false;
+    var redirect = false;
+    var popupId = null;
+    var owner = null;
+    if (typeof(popupObj) == "object")
+    {
+      popupId = popupObj.containerId;
+      param = popupObj.tagName;
+      extra = popupObj.customParam;
+      urlContext = popupObj.urlContext;
+      redirect = popupObj.redir;
+      owner = popupObj.owner;
+      if (urlContext == null && nbApi.consumer != null)
+        urlContext = nbApi.consumer.targetUrl;
+    }
+    else
+      popupId = popupObj;
+    if (popupId == null)
+      return false;
+    if (param == null)
+      return false;
+    var url;
+    if (urlContext == null)
+      urlContext = "http://sciencedirect.nextbio.com/e";
+    if ("" == "1.0.ui2")
+    {
+      url = urlContext + "/home/home.nb?q=" + encodeURIComponent(param) + "&" + extra;
+    }
+    else if (param.indexOf('%') >= 0 || param.indexOf('/') >= 0 || param.indexOf('+') >= 0) {
+      url = urlContext + "/search/ov.nb?q=" + encodeURIComponent(param) + "&" + extra;
+    }
+    else
+    {
+      var context = "ov";
+      if (event.urlContext != null)
+        context = event.urlContext;
+      url = urlContext + "/search/" + context + "/" + encodeURIComponent(param) + "?" + extra;
+    }
+    if (redirect)
+    {
+      var targetUrl = encodeURIComponent(url);
+      var campaignParam = "";
+      campaignParam += "NextBio|";
+      campaignParam += "tagType=" + popupObj.type + "|";
+      var viewMore = popupObj.viewMore=="yes"?"yes":"no";
+      campaignParam += "viewMore=" + viewMore + "|";
+      campaignParam += "sessionId=" + popupObj.sessionId + "|";
+      campaignParam += "pii=" + popupObj.pii + "|";
+      campaignParam += "uiStrategy=" + popupObj.strategy + "|";
+      campaignParam += "tagName=" + popupObj.tagName + "|";
+      campaignParam += "cloudSize=" + popupObj.size + "|";
+      campaignParam += "version=" + nbApi.consumer.version;
+      campaignParam = encodeURIComponent(campaignParam);
+      url = nbApi.consumer.redirectUrl + "?campaign_par=" + campaignParam + "&targetURL=" + targetUrl;    
+    }
+    var container = document.getElementById(popupId + "_frame_container");
+    var frameProperties = nbApi.getFrameProperties(popupId);
+    if (frameProperties == null)
+    {
+      if (container == null)
+        return false; 
+      nbApi.removeFrame(popupId);
+      var frame = document.createElement("iframe");
+      frame.id = popupId + "_frame";
+      frame.style.top = "0px";
+      frame.style.left = "0px";
+//       frame.style.width = "100%";
+//       frame.style.height = "100%";
+      frame.style.width = container.style.width;
+      frame.style.height = container.style.height;
+      frame.frameBorder = 1;
+      container.appendChild(frame);
+      frame.src = url; 
+      return false;
+    }
+    if (frameProperties.iFrame == "true" || frameProperties.iFrame == true)
+    {
+      if (container == null)
+        return false; 
+      nbApi.removeFrame(popupId);
+      var winWidth = nbApi.getWindowWidth();
+      var winHeight = nbApi.getWindowHeight();
+//       var frameWidth = Math.min(winWidth - 50, frameProperties.width);
+//       var frameHeight = Math.min(winHeight - 50, frameProperties.height);
+//       frameWidth = Math.max(frameWidth, 200);
+//       frameHeight = Math.max(frameHeight, 150);
+      var frameTop = Math.floor((winHeight - frameHeight)/2) + nbApi.getScrollTop() - 20; 
+      var frameLeft = Math.floor((winWidth - frameWidth)/2) + nbApi.getScrollLeft() - 10; 
+      frameTop = Math.max(frameTop, 0);
+      frameLeft = Math.max(frameLeft, 0);
+      
+//      container.style.position = "absolute";
+//       container.style.top = frameTop + "px";
+//       container.style.left = frameLeft + "px";
+      var frame = document.createElement("iframe");
+      frame.id = popupId + "_frame";
+      frame.frameBorder = 0;
+      container.appendChild(frame);
+      container.style.display = "";
+      frame.style.position = "relative";
+      frame.style.top = "0px";
+      frame.style.left = "0px";
+//       frame.style.width = "100%";
+//       frame.style.height = "100%";
+      frame.style.width = container.style.width;
+      frame.style.height = container.style.height;
+      frame.frameBorder = 1;
+      frame.src = url; 
+      return false;
+    }
+  
+    var target = frameProperties.target;
+    if (owner && (!target))
+    {
+      if (frameProperties.targetName)
+      {
+        owner.target = frameProperties.targetName;
+      }
+      owner.href = url;
+      return true;
+    }  
+  
+    var screenWidth = screen.availWidth != null ? screen.availWidth : screen.width;
+    var screenHeight = screen.availHeight != null ? screen.availHeight : screen.height - 100; // to account for non-client area of a window. 
+    var frameWidth = Math.min(screenWidth - 50, frameProperties.width);
+    var frameHeight = Math.min(screenHeight - 50, frameProperties.height);
+    frameWidth = Math.max(frameWidth, 200);
+    frameHeight = Math.max(frameHeight, 200);
+    var frameTop = frameProperties.top < 0 ? Math.floor((screenHeight - frameHeight)/2) : frameProperties.top; 
+    var frameLeft = frameProperties.left < 0 ? Math.floor((screenWidth - frameWidth)/2) : frameProperties.left; 
+    frameTop = Math.max(frameTop, 0);
+    frameLeft = Math.max(frameLeft, 0);
+  
+    var winParams = "resizable=yes,scrollbars=yes,status=yes,toolbar=yes,location=yes,menubar=no,top=" + frameTop + ",left=" + frameLeft + ",width=" + frameWidth + ",height=" + frameHeight;
+    try
+    {
+      if (window[target] != null)
+        window[target].close();
+    }
+    catch (error){}
+    var newWindow = window.open(url, frameProperties.targetName, winParams);
+    if (target != null)
+      window[target] = newWindow; 
+    return false;
+  };
+  nbApi.hideFrame = function(popupId)
+  {
+    if (popupId == null)
+      return;
+    var popup = document.getElementById(popupId + "_frame_popup");
+    if (popup == null)
+      return;  
+    popup.style.display = "none";
+    nbApi.removeFrame(popupId);
+  };
+  nbApi.removeFrame = function(popupId)
+  {
+    if (popupId == null)
+      return;
+    var frame = document.getElementById(popupId + "_frame");
+    if (frame == null)
+      return;
+    var container = frame.parentNode;
+    if (container == null)
+      return;
+    container.removeChild(frame);
+  };
+  nbApi.getFrameProperties = function(popupId)
+  {
+    if (popupId == null)
+      return null;
+    var popup = document.getElementById(popupId);  
+    if (popup == null)
+      return null;
+    var properties = {
+      target: popup.nextbioTarget,
+      targetName: popup.nextbioTargetName,
+      iFrame: popup.getAttribute("nextbioIFrame"),
+      top: popup.nextbioTop,
+      left: popup.nextbioLeft,
+      width: popup.nextbioWidth, 
+      height: popup.nextbioHeight
+    };
+    return properties;
+  };
+  
+  // importScript(url) - load javascript dynamically
+  // url - url of a javascript file
+  nbApi.importScript = function(url, iFrameId)
+  {
+    var bAlert = nbApi.getDebugMode();
+    if (url == null)
+    {
+      if (bAlert)
+        alert("Nextbio API: importScript: No URL.");
+      return;
+    }
+    if (iFrameId != null)
+    {
+      var iFrame = document.getElementById(iFrameId);
+      if (iFrame == null)
+      {
+        if (bAlert)
+          alert("Nextbio API: importScript: iFrame with id '" + iFrameId + "' not found.");
+        return;
+      }
+      var script = iFrame.contentWindow.document.createElement("script");
+      script.type = "text/javascript";
+      iFrame.contentWindow.document.body.appendChild(script);
+      script.src = url;
+    }
+    else 
+    {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      document.body.appendChild(script);
+      script.src = url;
+    }
+  };
+  
+  //================ extensions ==========
+  nbApi.findParentByClassName = function(obj, className)
+  {
+    if (obj == null || className == null)
+      return null;
+    while (obj != null)
+    {
+      if (obj.nodeType == 1 && obj.className != null && obj.className.trim() == className)
+        return obj;  
+      obj = obj.parentNode;
+    }  
+    return null;
+  };
+  
+  nbApi.findParentByTagName = function(obj, tagName)
+  {
+    if (obj == null || tagName == null)
+      return null;
+    tagName = tagName.toLowerCase();
+    obj = obj.parentNode;
+    while (obj != null)
+    {   
+      var objTagName = nbApi.trim(obj.tagName);
+      if (objTagName != null)
+        objTagName = objTagName.toLowerCase();
+      if (obj.nodeType == 1 && objTagName == tagName)
+        return obj;  
+      obj = obj.parentNode;
+    }  
+    return null;
+  };
+  
+  nbApi.show = function (targetId, bShow)
+  {
+    var element = document.getElementById(targetId);
+    if (element != null)
+      element.style.display = bShow?"inline":"none";
+  };
+  
+  nbApi.findElementsByName = function(name, type)
+  {
+    var group = document.getElementsByName(name);
+    if ((group == null || group.length == 0) && type != null)
+      group = document.getElementsByTagName(type);
+    if (group == null || group.length == 0)
+      return group;
+    var out = new Array();
+    var j = 0;            
+    for (i = 0; i < group.length; i++)
+    {
+      var nameAttr = group[i].getAttribute("name");
+      if (nameAttr == name)
+      {
+        out[j] = group[i];
+        j++;
+      }
+    }
+    return out;
+  };
+  
+  nbApi.findPosition = function(obj) 
+  {
+    var left = 0;
+    var top = 0;
+  	var iter = obj;
+    if (obj.offsetParent) 
+    {
+    	do 
+      {
+    		left += obj.offsetLeft;
+    		top += obj.offsetTop;
+    	} while (obj = obj.offsetParent);
+    }
+    else
+    {
+      left = obj.offsetLeft;
+      top = obj.offsetTop;   
+    }
+  
+  	while (iter) 
+    {
+      if (iter.tagName && iter.tagName.toLowerCase() == "body")
+      {
+        break;
+      }
+    	if (iter.scrollLeft) 
+      {
+    		left -= iter.scrollLeft;
+    	}
+    	if (iter.scrollTop) 
+      {
+    		top -= iter.scrollTop;
+    	}
+    	iter = iter.parentNode;
+  	}
+    return {left: left, top: top};
+  };
+  
+  nbApi.createId = function(id) 
+  {
+    var date1 = new Date();
+    date1.setFullYear(2000,1,1);
+    var date2 = new Date();
+    id += date2.getTime() - date1.getTime();
+    return id;
+  };
+  
+  nbApi.loadTimeoutHandler = function(targetId, timeoutId, timeoutCallback)
+  {
+    var bAlert = nbApi.getDebugMode();
+    if (targetId == null)
+    {
+      if (bAlert)
+        alert("Nextbio API: Timeout Handler: No target id.");
+      return false;
+    }
+    if (timeoutId == null)
+    {
+      if (bAlert)
+        alert("Nextbio API: Timeout Handler: No timeout id.");
+      return false;
+    }
+    var target = document.getElementById(targetId);
+    if (target == null)
+    {
+      if (bAlert)
+        alert("Nextbio API: Timeout Handler: Target doesn't exist.");
+      return false;
+    }
+    target.setAttribute(timeoutId, null);
+  
+    if (timeoutCallback == null)
+    {
+      return true;
+    }
+    return timeoutCallback(target);
+  };
+  nbApi.setCookie = function(cookieName, value, time)
+  {
+      var cookie=cookieName + "=" + escape(value) + ";path=/;";
+      if (time != null)
+      {
+        var date=new Date();
+        date.setFullYear(date.getFullYear() + time);
+        cookie += ";expires=" + date.toGMTString();
+      }
+      document.cookie=cookie;
+  }
+  nbApi.getCookie = function(cookieName)
+  {
+    if (document.cookie.length > 0)
+    {
+      cookieStart = document.cookie.indexOf(cookieName + "=");
+      if (cookieStart != -1)
+      { 
+      cookieStart = cookieStart + cookieName.length + 1; 
+      cookieEnd = document.cookie.indexOf(";", cookieStart);
+      if (cookieEnd == -1) cookieEnd = document.cookie.length;
+      return unescape(document.cookie.substring(cookieStart, cookieEnd));
+      } 
+    }
+    return "";
+  }
+  nbApi.hidePopup = function(name)
+  {  
+    var elements = nbApi.findElementsByName(name, "div");
+    if (elements)
+    {      
+      for (i = 0; i < elements.length; i++)
+      {
+        elements[i].style.display="none";
+      }
+    }
+    var back = document.getElementById("nbApiHelpBackId");
+    if (back)
+    {
+      document.body.removeChild(back);
+    }
+  }
+  nbApi.showPopup = function(config)
+  {  
+    if (!config)
+      return;
+    var pos = nbApi.findPosition(config.owner);    
+    var elements = nbApi.findElementsByName(config.helpBoxId, "div");
+    if (elements == null)
+      return;
+    var helpBox = elements[0];
+    if (config.bModal)
+    {
+  		var back = document.createElement("div");
+  		back.id="nbApiHelpBackId";
+  		back.onclick = function()
+      {
+        helpBox.style.display="none"; 
+        document.body.removeChild(back);
+      };
+  		back.className = "nbApiHelpBackground";
+      var pageSize = nbApi.pageSize();
+  		back.style.width = pageSize.width + "px";
+  		back.style.height = pageSize.height + "px";
+  		document.body.appendChild(back);
+		}
+    helpBox.style.display = "block";
+    var winWidth = nbApi.getWindowWidth();
+    var winHeight = nbApi.getWindowHeight();
+
+    var top = 0;
+    var left = 0;
+    if (config.align == "center")
+    {
+      top = (winHeight - helpBox.offsetHeight)/2;
+      if (top < 0)
+        top = 0;
+      top += nbApi.getScrollTop();
+
+      left = (winWidth - helpBox.offsetWidth)/2;
+      if (left < 0)
+        left = 0;
+      left += nbApi.getScrollLeft();
+    }
+    else
+    {
+      top = (pos.top + helpBox.offsetHeight) < winHeight ? pos.top : (winHeight - helpBox.offsetHeight);
+      if (top < 0)
+        top = 0;
+      top += nbApi.getScrollTop();
+      left = (pos.left + helpBox.offsetWidth) < winWidth ? pos.left : (winWidth - helpBox.offsetWidth - 25);
+      left += nbApi.getScrollLeft();
+    }
+    helpBox.style.top = top + "px";
+    helpBox.style.left = left + "px";
+  }
+  
+  nbApi.showHelp = function(config)
+  {
+    if (!config)
+      return false;
+    if (!config.owner || !config.name)
+      return false;
+    config.owner.href = "http://sciencedirect.nextbio.com/e/help/download.nb?f=" + config.name + ".pdf";
+    return true;
+  }
+
+  nbApi.pageSize = function()
+  {
+    var pageWidth = 0;
+    var pageHeight = 0;
+    if( window.innerHeight && window.scrollMaxY ) // Firefox 
+    {
+      pageWidth = window.innerWidth + window.scrollMaxX;
+      pageHeight = window.innerHeight + window.scrollMaxY;
+    }
+    else if( document.body.scrollHeight > document.body.offsetHeight ) // all but Explorer Mac
+    {
+      pageWidth = document.body.scrollWidth;
+      pageHeight = document.body.scrollHeight;
+    }
+    else // works in Explorer 6 Strict, Mozilla (not FF) and Safari
+    { 
+      pageWidth = document.body.offsetWidth + document.body.offsetLeft; 
+      pageHeight = document.body.offsetHeight + document.body.offsetTop; 
+    }
+    return {width: pageWidth, height: pageHeight};
+  }  
+  nbApi.getElementsByClassName = function(el, clazz, tag)  {
+    var a = [];
+    var re = new RegExp('\\b' + clazz + '\\b');
+    var els = el.getElementsByTagName(tag||"*");
+    for(var i=0,j=els.length; i<j; i++)
+        if(re.test(els[i].className))a.push(els[i]);
+    return a;
+  }
+/**
+ * Give a parameter string (e.g. a=x&b=y), look up a parameter in it
+ * @param str parameter string
+ * @param param parameter to look up
+ * @return parameter value
+ */
+
+nbApi.getParam = function(str, param)
+{
+  if (str == null)
+    return null;
+  var paramHead = param + "="; 
+  var begin = str.indexOf(paramHead);
+  if (begin < 0) // str doesn't have this param - return null
+    return null;
+
+  if (begin > 0) 
+  {
+    begin = str.indexOf("&" + paramHead); // make sure we found exact match
+    if (begin < 0) // str doesn't have this param - return null
+      return null;
+    begin++; // skip "&"
+  }
+  var end = str.indexOf("&", begin);  
+  if (end < 0) // this is the last param 
+  {
+    end = str.length;
+  }
+  var result = str.substring(begin + paramHead.length, end);
+  return result;
+}
+// make sure that the element's position is within window bounds
+nbApi.getAdjustedPosition = function(element, y, x, rightBound, bottomBound)
+{
+  if (element == null)                             
+    return;
+  var left = x;  
+  var top = y - element.offsetHeight; // x, y are coords of bottom left corner  
+  var bottom = bottomBound, right = rightBound;
+  if (bottom == null)
+    bottom = nbApi.getWindowHeight();
+  if (right == null)
+    right = nbApi.getWindowWidth();
+  
+  var deltaY = top;
+  var deltaX = right - (left + element.offsetWidth);
+  scrollTop = nbApi.getScrollTop();
+  top += scrollTop; // to account for page scrolling  
+  if (deltaY < 0)
+  {
+    top -=  deltaY; 
+    if (top < scrollTop)
+      top = scrollTop;
+  }
+  var newY = top + element.offsetHeight;
+
+  scrollLeft = nbApi.getScrollLeft();
+  left += scrollLeft; // to account for page scrolling  
+  if (deltaX < 0)
+  {
+    left += deltaX;
+    if (left < scrollLeft)
+      left = scrollLeft;
+  }
+  return {x: left, y: newY};
+}
+nbApi.truncateWithEllipses = function(str, maxSize, terminator)
+{
+  if (str == null || maxSize == null)
+    return null;
+  if (terminator == null)
+    terminator = "...";  
+  var out = str.substr(0, maxSize);
+  if (maxSize < str.length)
+  {
+    out += terminator;
+  }
+  return out; 
+}
+nbApi.cancelEvent = function(event)
+{
+	if (!event) 
+    event = window.event;
+  if (event)
+  {
+    event.cancelBubble = true;
+  	if (event.stopPropagation)
+    { 
+      event.stopPropagation();
+    }
+  }
+}
+/**
+ * Return the standard icon for a given type
+ * @param type, type, e.g. "gene", "biogroup"
+ * @param opaque if true, use IE6 opaque icons if available.  These icons will work on a white
+ * background.  This should only be set if the use of the Png class doesn't prevent
+ * blue backgrounds
+ * @return base url for the icon
+ */
+nbApi.getIcon = function(type, root, bLabel, opaque) 
+{
+  if (type == null || root == null)
+    return null;
+  type = type.toLowerCase();
+
+  if (bLabel == true)
+    root += "/labels/";
+  else
+    root += "/icons/";  
+    
+  opaque = (opaque && navigator.userAgent.indexOf("MSIE 6") > 0)?"_opq":"";
+
+  if (type == "gene" || type == "feature" || type == "genes") return root + "gene" + opaque + ".png";
+  if (type == "tissue" || type == "tissues") return root + "tissue" + opaque + ".png";
+  if (type == "treatment" || type == "compound" || type == "treatments") return root + "treatment" + opaque + ".png";
+  if (type == "disease" || type == "diseases") return root + "disease" + opaque + ".png";
+  if (type == "bioset") return root + "bioset" + opaque + ".png";
+  if (type == "biogroup" || type == "biogroups") return root + "biogroup" + opaque + ".png";
+  if (type == "biosource") return root + "biosource.png";
+  if (type == "biodesign") return root + "biodesign.png";
+  if (type == "genemode") return root + "genemode.png";
+  if (type == "snp") return root + "snp" + opaque + ".png";
+  if (type == "author") return root + "author" + opaque + ".png";
+  if (type == "study") return root + "study" + opaque + ".png";
+  if (type == "organism") return root + "organism" + opaque + ".png";
+  return root + "unknown.png";
+};
+
+nbApi.addEvent = function(elem, evtType, func, capture) 
+{
+  capture = (capture) ? capture : false;
+  if (elem.addEventListener) 
+  {
+    elem.addEventListener(evtType, func, capture);
+    return true;
+  } 
+  if (elem.attachEvent) 
+  {
+    elem.attachEvent("on" + evtType, func);
+    return true;
+  } 
+  return false;
+} 
+nbApi.addEventHandler = function(element, eventName, handler) 
+{
+  nbApi.removeEvent(element, eventName, handler, false)
+  var rc = nbApi.addEvent(element, eventName, handler, false);
+  if (rc) return;
+  eventName = "on" + eventName;  
+  var chain = (element[eventName]) ? element[eventName] : function(){};
+  element[eventName] = function(event) 
+  {
+    chain(event);
+    handler(event);
+  }
+}
+nbApi.removeEvent = function(elem, evtType, handler, capture) 
+{
+  capture = (capture) ? capture : false;
+  if (elem.removeEventListener) 
+  {
+    elem.removeEventListener(evtType, handler, capture);
+  } 
+  else if (elem.attachEvent) 
+  {
+    elem.detachEvent("on" + evtType, handler);
+  } 
+  else 
+  {
+    elem["on" + evtType] = null;
+  }
+}
+nbApi.showSection = function(targetId, bShow)
+{
+  var element = document.getElementById(targetId);
+  if (element != null)
+    element.style.display = bShow?"block":"none";
+}
+
+
+
+nbApi.whichElement = function(e)
+{
+  var target;
+  if (!e) var e = window.event;
+  if (e.target) target = e.target;
+  else if (e.srcElement) target = e.srcElement;
+  if (target.nodeType == 3) // work around Safari bug
+  target = target.parentNode;
+  return target;
+}
+    
+  
+    
+
+
+
+
+  // NextBio Tag Cloud Support JavaScript Library
+  // requires jsApi.jsp, jsUtils.jsp
+  // all the internal function names and global variables should begin with _nextbio_ (as in _nextbio_Load()).
+  
+  // _nextbio_TagTypes - collection of predefined tag types (subtabs)
+  nbApi.tagTypes = {literature: "literature", fullText: "fullText", clinicalTrials: "clinicalTrials"};
+  // _nextbio_GetTagTypes() - returns collection of predefined tag types
+  nbApi.getTagTypes = function()
+  {
+    return nbApi.tagTypes;
+  };
+  // NbTagCloudTypes - collection of predefined tag cloud types (data sources)
+    nbApi.tagCloudTypes = {literature: "literature", fullText: "fullText", clinicalTrials: "clinicalTrials"};
+  // NbTagCloudTypes() - returns collection of predefined tag types
+  nbApi.getTagCloudTypes = function()
+  {
+    return nbApi.tagCloudTypes;
+  };
+  
+  // nbCreateTagCloud(tagType, key, bAlert) - create basic cloud configuration object
+  // tagType - type of tags (_nextbio_TagTypes.literature, _nextbio_TagTypes.fullText, _nextbio_TagTypes.clinicalTrials )
+  // bAlert - optional. True if we want to display alerts.
+  nbApi.createTagCloud = function(type)
+  {
+    var bAlert = nbApi.getDebugMode();
+    if (type == null)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: Tag cloud type is not specified.");
+      return null;
+    }
+    var tagTypes = nbApi.getTagTypes();
+    if (tagTypes[type] == null)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: Illegal tag type value.");
+      return null;
+    }
+    var tagCloud = {
+      attributes: 
+      {
+        tagCloudType: true,     // one of the values defined in _nextbio_TagTypes: literature, clinicalTrials, etc.
+        tagType: true,  // tag filter: "bioset", "study", "compound", etc.
+        query: true,    // a search string 
+        id: true,    //  an object id
+        source: true,   // search source. Default "nextbio" source means NextBio general Search and assumes that query is a string of search terms
+        extra: true,    // additional parameters to clarify meaning of query and id
+        className: true,    // css style
+        urlContext: true,    // context to prepend to relative url    
+        header: true,   // header to display on top of the cloud
+        headerClassName: true,   // CSS class to display header
+        headerStyle: true,   // style to display header
+        footer: true,   // header to display on top of the cloud
+        footerClassName: true,   // CSS class to display header
+        footerStyle: true,   // style to display header
+        message: true,   // message to display while the cloud is loaded
+        messageClassName: true,   // CSS class to display message
+        messageStyle: true,   // style to display message
+        frameTarget: true,   // target name for a new popup window. If null - open in old browser window
+        frameTargetName: true,   // name for a window target property
+        iFrame: true,   // If true - open popup in an iFrame, otherwise - open in a new browser window
+        frameTop: true,   // popup position
+        frameLeft: true,   // popup position
+        frameWidth: true,   // popup width
+        frameHeight: true,   // popup height
+        onClick: true,   // customer defined function to be executed when onclick event fires up: onClick(event, tagName, customOnClickParam)
+        onClickParam: true,   // customer defined parameter string to be passed to onClick(event, tagName, customOnClickParams)
+        onMouseOver: true,   // customer defined function to be executed when onmouseover event fires up: onMouseOver(event, tagName, onMouseOverParam)
+        onMouseOverParam: true,   // customer defined parameter string to be passed to onMouseOver(event, tagName, onMouseOverParam)
+        onMouseOut: true,   // customer defined function to be executed when onmouseover event fires up: onMouseOut(event, tagName, onMouseOutParam)
+        onMouseOutParam: true,   // customer defined parameter string to be passed to onMouseOut(event, tagName, onMouseOutParam)
+        callback: true,   // pointer to callback to be executed after cloud is loaded with a standard (Nextbio provided) function (updateTargetHTML()) 
+        callbackName: true,   // name of a callback to be executed after cloud is loaded - currently through dynamic script tag
+        timeout: true,   // if loading time exceeds the timeout, timeout callback is invoked (if specified)
+        timeoutTerminate: true, // if true, don't load the tag cloud after loading time exceeds the timeout 
+        timeoutCallback: true,   // callback function to be executed after if loading time is more than timeout. timeoutCallBack(targetObject);
+        delay: true,   // for testing only. instructs server to sleep for specified time (milliseconds)
+        report: true,   // for testing only. generate a report.
+        iFrameId: true,  // id of an iFrame to be used in loadScript/importScript functions (for concurrent execution)
+        cloudSize: true   // how many tags to display
+      },
+      tagCloudType: type, 
+      tagType: "ALL", 
+      source: "nextbio",
+      frameTarget: "nextbio_popup_frame",   // target name for a new popup window. If null - open in old browser window
+      iFrame: false,   // If true - open popup in an iFrame, otherwise - open in a new browser window
+      frameTop: -1,   // popup position
+      frameLeft: -1,   // popup position
+      frameWidth: 790 + 240,   // popup width
+      frameHeight: 700,   // popup height
+      className: "nbApiTagCloud",
+      headerClassName: "nbApiTagCloudHeader",
+      urlContext: "http://sciencedirect.nextbio.com/e",
+      messageStyle: "font-family: Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: bold; color: #808080;",
+      onClick: function (event, containerId, tagName, customParam, urlContext){return nbApi.showFrame(event, containerId, tagName, customParam, urlContext);},
+      callbackName: "nbApi.updateTargetHTML",
+      delay: 0,
+      cloudSize: 40   // how many tags to display
+    };
+    tagCloud.setAttribute = function(attrName, attrValue)
+    {
+      nbApi.setTagCloudAttribute(tagCloud, attrName, attrValue);
+    }
+    tagCloud.load = function(targetId)
+    {
+      nbApi.loadTagCloud(targetId, tagCloud);
+    }
+    return tagCloud;
+  };
+  // nbSetTagCloudAttribute(tagCloud, attrName, attrValue, bAlert, bEncode) - convenience function that sets attribute values
+  // makes sure that attrName is a known attribute name and can be modified
+  // tagCloud - tag cloud object
+  // attrName, attrValue - attribute name/value pair
+  // bEncode - optional. True if we need to URI encode attribute's value
+  nbApi.setTagCloudAttribute = function(tagCloud, attrName, attrValue, bEncode)
+  {
+    var bAlert = nbApi.getDebugMode();
+    if (tagCloud == null)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: tagCloud is not specified.");
+      return tagCloud;
+    }
+    if (tagCloud.attributes == null)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: Not a legitimate tag cloud object.");
+      return tagCloud;
+    }
+    if (tagCloud.attributes[attrName] != true)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: Illegal or unknown attribute name.");
+      return tagCloud;
+    }
+    if (bEncode == true)
+      attrValue = encodeURIComponent(attrValue);  
+    tagCloud[attrName] = attrValue;
+    return tagCloud;
+  };
+  // nbLoadTagCloud(targetId, tagCloud, bAlert)
+  // load tag cloud and insert results in a target 
+  // targetId - HTML id of a div, span, etc. that will contain tag cloud
+  // tagCloud - a tag cloud object created with nbCreateTagCloud() and configured with nbSetTagCloudAttribute() methods
+  // bAlert - optional. True if we want to display alerts.
+  nbApi.loadTagCloud = function(targetId, tagCloud)
+  {
+    var bAlert = nbApi.getDebugMode();
+    if (targetId == null)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: target id is not specified.");
+      return;
+    }
+    if (tagCloud == null)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: tagCloud is not specified.");
+      return tagCloud;
+    }
+    if (nbApi.apiKey == null)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: API key is not specified.");
+      return;
+    }
+    if (tagCloud.tagCloudType == null)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: Tag cloud type is not specified.");
+      return;
+    }
+    if (tagCloud.source == null)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: Source is not specified.");
+      return;
+    }
+    var element = document.getElementById(targetId);
+    if (element == null)
+    {
+      if (bAlert)
+        alert("Nextbio Tag Cloud: target not found.");
+      return;
+    }
+    element.nextbioOnClick = tagCloud.onClick;
+    element.nextbioOnClickParam = tagCloud.onClickParam;
+    element.nextbioOnMouseOver = tagCloud.onMouseOver;
+    element.nextbioOnMouseOverParam = tagCloud.nextbioOnMouseOverParam;
+    element.nextbioOnMouseOut = tagCloud.onMouseOut;
+    element.nextbioOnMouseOutParam = tagCloud.nextbioOnMouseOutParam;
+    element.nextbioUrlContext = tagCloud.urlContext;
+    element.nextbioTarget = tagCloud.frameTarget;
+    element.nextbioTargetName = tagCloud.frameTargetName;
+    element.setAttribute("nextbioIFrame", tagCloud.iFrame);
+    element.nextbioTop = tagCloud.frameTop;
+    element.nextbioLeft = tagCloud.frameLeft;
+    element.nextbioWidth = tagCloud.frameWidth;
+    element.nextbioHeight = tagCloud.frameHeight;
+    element.nextbioTargetClassName = tagCloud.className;
+    element.nextbioHeaderClassName = tagCloud.headerClassName;
+    element.nextbioHeader = tagCloud.header;
+    element.nextbioFooterClassName = tagCloud.footerClassName;
+    element.nextbioFooter = tagCloud.footer;
+
+
+  
+    if (tagCloud.message != null)
+      nbApi.addClass(element, tagCloud.className);
+    var query = "type=" + tagCloud.tagCloudType + "&apiKey=" + nbApi.apiKey + "&source=" + tagCloud.source + "&tagType=" + tagCloud.tagType;
+    query += "&sid=" + nbApi.sessionId;
+    query += "&ts=" + nbApi.timeStamp;
+    query += "&tos=" + nbApi.timeoutStamp;
+    
+      query += "&dpId=" + 1;
+    
+    
+
+    if (tagCloud.query != null)
+      query += "&query=" +  encodeURIComponent(tagCloud.query);
+    if (tagCloud.id != null)
+      query += "&id=" +  encodeURIComponent(tagCloud.id);
+    if (tagCloud.extra != null)
+      query += "&extra=" +  encodeURIComponent(tagCloud.extra);
+    query += "&nameSpace=" +  "nbApi";
+    if (tagCloud.delay > 0)
+      query += "&delay=" +  tagCloud.delay;
+    if (tagCloud.report == true)
+      query += "&report=true";
+    if (tagCloud.iFrameId != null)
+      query += "&framed=true";
+    if (tagCloud.cloudSize != null)
+      query += "&tagCloudSize=" + tagCloud.cloudSize;
+    var url = tagCloud.urlContext;
+    if (url == null)
+      url = "http://sciencedirect.nextbio.com/e";
+    url += "/service/tags.nb";      
+    var config = 
+    {
+      target: targetId,
+      callbackName: tagCloud.callbackName,
+      callback: tagCloud.callback,
+      url: url,
+      query: query,
+      timeout: tagCloud.timeout,
+      timeoutCallback: tagCloud.timeoutCallback,
+      timeoutTerminate: tagCloud.timeoutTerminate,
+      message: tagCloud.message,
+      messageStyle: tagCloud.messageStyle,
+      report: tagCloud.report,
+      iFrameId: tagCloud.iFrameId
+    };  
+    nbApi.loadScript(config);  
+  };
+  nbApi.tagCloudShowLess=function(type) {
+    var el = document.getElementById("nbApitagCloud"+type);
+    nbApi.addClass(el,"nbApiTagCloudShowLess");
+    nbApi.removeClass(el,"nbApiTagCloudShowMore");
+  }
+  nbApi.tagCloudShowMore=function(type) {
+    var el = document.getElementById("nbApitagCloud"+type);
+    nbApi.addClass(el,"nbApiTagCloudShowMore");
+    nbApi.removeClass(el,"nbApiTagCloudShowLess");
+    if (el)
+      el.nbExpand = "yes";
+  }
+nbApi.tagCloudReportFromId = function(div, id, search, iFrameId)
+{
+    var tagCloud = nbApi.createTagCloud(nbApi.getTagTypes().fullText);
+    tagCloud.setAttribute("id", id);
+    tagCloud.setAttribute("query", search);
+    tagCloud.setAttribute("iFrameId", iFrameId);
+    tagCloud.setAttribute("report", true);
+    tagCloud.load(div);
+};
+
+  
+    
+
+
+
+
+// NextBio Tag Cloud Support JavaScript Library
+// Elsevier specific part of the tag cloud API
+// requires jsApi.jsp, jsUtils.jsp, jsTagCloud.jsp
+
+nbApi.consumer={};
+nbApi.consumer.name="elsevier.sciencedirect";
+nbApi.consumer.version="1.0";  
+nbApi.consumer.redirect=true;
+nbApi.consumer.redirectUrl="http://www.sciencedirect.com/science/redirect";
+nbApi.consumer.targetUrl="http://sciencedirect.nextbio.com/e";
+
+nbApi.tagCloudFromQuery = function(div, search, callback, timeout, timeoutTerminate, timeoutCallback, iFrameId, urlContext, delay, iFrame)
+{
+  
+    var tagCloud = nbApi.createTagCloud(nbApi.getTagTypes().fullText);
+    tagCloud.setAttribute("query", search);
+    tagCloud.setAttribute("callback", callback);
+    tagCloud.setAttribute("timeout", timeout);
+    tagCloud.setAttribute("timeoutTerminate", timeoutTerminate == true);
+    tagCloud.setAttribute("timeoutCallback", timeoutCallback);
+    tagCloud.setAttribute("frameTarget", null);
+    
+    if (urlContext != null)
+      tagCloud.setAttribute("urlContext", urlContext);
+    if (delay != null)
+      tagCloud.setAttribute("delay", delay);
+    tagCloud.setAttribute("iFrameId", iFrameId);
+    tagCloud.setAttribute("iFrame", iFrame);
+    tagCloud.load(div);
+  
+  
+
+};
+
+nbApi.tagCloudFromId = function(div, id, search, callback, timeout, timeoutTerminate, timeoutCallback, iFrameId, urlContext, iFrame)
+{
+  
+    var tagCloud = nbApi.createTagCloud(nbApi.getTagTypes().fullText);
+    tagCloud.setAttribute("id", id);
+    tagCloud.setAttribute("query", search);
+    var cb = callback;
+    
+    tagCloud.setAttribute("callback", cb);
+    tagCloud.setAttribute("timeout", timeout);
+    tagCloud.setAttribute("timeoutTerminate", timeoutTerminate == true);
+    tagCloud.setAttribute("timeoutCallback", timeoutCallback);
+    tagCloud.setAttribute("frameTarget", null);
+    tagCloud.setAttribute("cloudSize", 100);
+    if (urlContext != null)
+      tagCloud.setAttribute("urlContext", urlContext);
+    tagCloud.setAttribute("iFrameId", iFrameId);
+    tagCloud.setAttribute("iFrame", iFrame);
+    tagCloud.load(div);
+  
+  
+};
+
+nbApi.tagCloudFromPii = function(div, id, search, callback, timeout, timeoutTerminate, timeoutCallback, iFrameId, urlContext, iFrame)
+{
+  nbApi.tagCloudFromId(div, id, search, callback, timeout, timeoutTerminate, timeoutCallback, iFrameId, urlContext, iFrame);
+};
+
+nbApi.tagCloudFromDoi = function(div, id, search, callback, timeout, timeoutTerminate, timeoutCallback, iFrameId, urlContext, iFrame)
+{
+  nbApi.tagCloudFromId(div, id, search, callback, timeout, timeoutTerminate, timeoutCallback, iFrameId, urlContext, iFrame);
+};
+
+nbApi.tagcloudOpen = function(elementName, groupName)
+{
+  var elements = nbApi.findElementsByName(groupName, "div");
+  if (elements == null)
+    return;
+  var elementId = "tag_" + elementName;  
+  var switchId = "switch_" + elementName;  
+  var switches = nbApi.findElementsByName("switch_" + groupName, "span");
+
+  for (var i = 0; i < switches.length; i++)
+  {
+    switches[i].className = "nbApiEmphO";
+  }
+  for (var i = 0; i < elements.length; i++)
+  {
+    var element = elements[i];
+    if (element.id != elementId)
+    {
+      element.style.display = "none";
+    }
+    else
+    {
+      var image = document.getElementById("switch_" + elementName);
+      if (element.style.display == "none")
+      {
+        element.style.display = "block";
+        image.className = "nbApiEmphC";
+      }
+      else
+      {
+        element.style.display = "none";
+      }
+    }
+  } 
+};
+nbApi.showMoreTerms = function(groupName, more)
+{
+  if (groupName == null)
+    return;
+  var longDiv = document.getElementById("long_" + groupName);
+  var shortDiv = document.getElementById("short_" + groupName);
+  var moreLink = document.getElementById("more_" + groupName);
+  var lessLink = document.getElementById("less_" + groupName);
+  
+  if (more == null || more == true)
+  {
+    longDiv.style.display = "block";
+    shortDiv.style.display = "none";
+    lessLink.style.display = "block";
+    moreLink.style.display = "none";
+  }
+  else
+  {
+    longDiv.style.display = "none";
+    shortDiv.style.display = "block";
+    lessLink.style.display = "none";
+    moreLink.style.display = "block";
+  }
+}
+
+         
+

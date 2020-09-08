@@ -1,0 +1,2 @@
+if(1)
+{$.getScript("/pb-assets/ads/ads-"+journalAdParams.alt_code+"-header.js").done(function(script,textStatus){console.debug('Insticator header is loaded');}).fail(function(jqxhr,settings,exception){console.debug('No Insticator header found for this journal');});}

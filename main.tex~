@@ -1,0 +1,17 @@
+\documentclass[doc]{apa6}
+\usepackage[american]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{natbib}
+\usepackage{hyperref}
+
+
+\begin{document}
+\thispagestyle{otherpage}
+\renewcommand\refname{}
+\nocite{*}
+
+\bibliographystyle{apalike-refs-sorted1}
+\bibliography{works3/works3b}
+
+\end{document}

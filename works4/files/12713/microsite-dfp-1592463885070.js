@@ -1,0 +1,7 @@
+var dfpFile='/pb-assets/Microsite/dfp-ads'+window.location.pathname+'.json';var dfpData=null;var dfpSlotsReady=false;function micrositeDfpEnabled(){return dfpData!==null;}
+function getDfpInfo(){if(micrositeDfpEnabled()){console.debug("DFP Slot = "+dfpData.dfp_slot);console.debug("DFP Code = "+dfpData.dfp_code);}}
+function pushDfpSlots(){if(micrositeDfpEnabled()){googletag.cmd.push(function(){googletag.defineSlot('/53867575/'+dfpData.dfp_slot+'_300x250_micro',[300,250],'div-gpt-ad-'+dfpData.dfp_code+'-0').addService(googletag.pubads());googletag.defineSlot('/53867575/'+dfpData.dfp_slot+'_Leader_micro_bottom',[728,90],'div-gpt-ad-'+dfpData.dfp_code+'-1').addService(googletag.pubads());googletag.defineSlot('/53867575/'+dfpData.dfp_slot+'_Leader_micro_top',[728,90],'div-gpt-ad-'+dfpData.dfp_code+'-2').addService(googletag.pubads());console.log('Microsite: Pushed DFP Ads');googletag.pubads().collapseEmptyDivs(true);googletag.pubads().set("page_url",window.location.origin);googletag.enableServices();dfpSlotsReady=true;});}
+else
+console.log('Microsite: CM8 Ads');}
+function initMicrositeDfp(){$.ajaxSetup({async:false});$.getJSON(dfpFile,function(){}).done(function(data){console.log(dfpFile+' parsed!');dfpData=data;}).fail(function(){console.log(dfpFile+' NOT found');}).always(function(){getDfpInfo();pushDfpSlots();})
+$.ajaxSetup({async:true});}

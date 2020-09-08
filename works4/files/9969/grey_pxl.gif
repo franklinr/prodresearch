@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:spry="http://ns.adobe.com/spry" lang="en" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ 
+<title>EZproxy</title>
+ 
+<!-- META TAGS start -->
+        
+        <meta name="Title" content="Computing Services ~ University of Liverpool" />
+        <meta name="Author" content=" " />
+        <meta name="Creator" content=" " />
+        <meta name="Contributor" content=" " />        
+        <meta name="Publisher" content="University of Liverpool" />        
+        <meta name="Subject" content="Computing Services - University of Liverpool" />
+        <meta name="Keywords" content=" " />
+        <meta name="Description" content=" " />
+        <meta name="Date" content="5 June 2009" />
+		<meta name="Last updated" content="5 June 2009" />
+        <meta name="Type" content="University of Liverpool Web Site" />
+        <meta name="Format" content="text/html" />
+        <meta name="Rights" content="Copyright University of Liverpool" />
+        <meta name="Identifier" content="http://www.liv.ac.uk/" />
+        <meta name="Language" content="en-uk" />
+        
+<!-- META TAGS end -->
+ 
+<!-- scripts -->
+<script type="text/javascript" language="javascript">document.documentElement.className = "js";</script>
+<script src="https://www.liv.ac.uk/styles/SpryAssets/SpryTabbedPanels.js" type="text/javascript"></script>
+ 
+<!-- new styles -->
+<link rel="stylesheet" type="text/css" href="https://www.liv.ac.uk/styles/css-combine/reset-min.css" /> 
+<link rel="stylesheet" type="text/css" href="https://www.liv.ac.uk/styles/css-combine/master-import.css" media="screen, projection"/>
+<link rel="stylesheet" type="text/css" href="https://www.liv.ac.uk/styles/css-combine/fonts.css" media="screen, projection"/>
+<link rel="stylesheet" type="text/css" href="https://www.liv.ac.uk/styles/SpryAssets/search-tabs.css" media="screen, projection"/>
+ 
+<!-- legacy styles -->
+<link rel="stylesheet" type="text/css" href="https://www.liv.ac.uk/styles/new/newadmin.css" /> 
+ 
+<!-- internet explorer -->
+<!--[if IE 7]><link rel="stylesheet" type="text/css" href="https://www.liv.ac.uk/styles/css-combine/ie7.css"><![endif]-->
+<!--[if IE 6]><link rel="stylesheet" type="text/css" href="https://www.liv.ac.uk/styles/css-combine/ie6.css"><![endif]-->
+ 
+<link rel="stylesheet" type="text/css" href="https://www.liv.ac.uk/styles/css-combine/print.css" media="print"/>
+ 
+<!-- CSD styles -->
+<link rel="stylesheet" href="https://www.liv.ac.uk/csd/csd_styles/internal/csd2.css" type="text/css" />
+ 
+ 
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:DescriptionComments msdt:dt="string">Template 1</mso:DescriptionComments>
+<mso:ContentType msdt:dt="string">DescriptionDoc</mso:ContentType>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+<!-- container code begins -->
+<div id="container">
+	
+    <!-- header begins -->
+	<div id="header">
+ 
+		<!-- Logo for printed pages only -->
+		<img src="https://www.liv.ac.uk/images/logo-inside-lg.gif" alt="The University of Liverpool" id="print-logo" />
+	
+		<a href="#main-content" title="Skip Navigation" id="skip-nav" >Skip navigation</a>
+        
+		<h1><a id="h1-link" href="http://www.liv.ac.uk/" title="Univeristy of Liverpool home">University of Liverpool</a></h1>
+		
+        <ul class="global-nav">
+			<li>University:&nbsp;</li>
+ 
+			<li><a href="http://www.liv.ac.uk/">Home</a> |&nbsp;</li>
+			<li><a href="http://www.liv.ac.uk/a-z/">A-Z Index</a> |&nbsp;</li>
+			<li><a href="http://www.liv.ac.uk/staff/index.htm">Staff</a> |&nbsp;</li>
+			<li><a href="http://www.liv.ac.uk/students/index.htm">Students</a></li>
+ 
+		</ul>
+ 
+  
+<h2><a href="http://www.liv.ac.uk/csd/" class="nav-link">COMPUTING SERVICES</a></h2>
+ 
+        
+		<!-- search box code -->
+		<div id="TabbedPanels1" class="TabbedPanels" >
+			<ul class="TabbedPanelsTabGroup">
+				<li class="TabbedPanelsTab" ><a href="#">Computing Services</a></li>
+ 
+				<li class="TabbedPanelsTab" ><a href="#">Website</a></li>
+			</ul>
+			<div class="TabbedPanelsContentGroup">
+				<div class="TabbedPanelsContent">
+					<form id="search" method="get" action="http://google.liv.ac.uk/search" name="gs">
+						<label>
+							<span class="hidden-label">Search Computing Services</span>
+							<input type="text" name="q" size="25" id="query" maxlength="255" value="" class="search-input"/>
+ 
+						</label>
+						<input type="submit" name="btnG" value="Search"/>
+						<input type="hidden" name="site" value="CSD"/>
+						<input type="hidden" name="client" value="default09"/>
+						<input type="hidden" name="proxystylesheet" value="default09"/>
+						<input type="hidden" name="output" value="xml_no_dtd"/>
+					</form>
+				</div>
+				<div class="TabbedPanelsContent">
+ 
+					<form id="search1" method="get" action="http://google.liv.ac.uk/search" name="gs">
+						<label>
+							<span class="hidden-label">Search the University website</span>
+							<input type="text" name="q" size="25" id="query1" maxlength="255" value="" class="search-input"/>
+						</label>
+						<input type="submit" name="btnG" value="Search"/>
+						<input type="hidden" name="site" value="default_collection"/>
+						<input type="hidden" name="client" value="default09"/>
+ 
+						<input type="hidden" name="proxystylesheet" value="default09"/>
+						<input type="hidden" name="output" value="xml_no_dtd"/>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- search box ends -->	
+ 
+    </div>
+    <!-- header ends -->       
+ 
+<!-- left-hand-column begins -->
+ 
+	<div id="left-hand-column">
+    
+    <!-- left-hand-nav begins SELECT 1 for dual nav script and noscript versions 0 for single nav -->
+    	<div id="left-hand-nav">
+ 
+           	<ul>
+              
+			  <li><a href="https://register.liv.ac.uk/" class="leftmenutop">Registration</a></li>
+              <li><a href="http://www.liv.ac.uk/csd/registration/forms.htm" class="leftmenutop">Registration Forms</a></li>
+	          <li><a href="https://www.liv.ac.uk/mwspw" class="leftmenutop">Change your MWS Password</a></li>
+              <li><a href="http://announce.liv.ac.uk/" class="leftmenutop">Announcements</a></li>
+              <li><a href="http://www.liv.ac.uk/csd/regulations/index.htm" class="leftmenutop">Regulations and Guidelines</a></li>
+              <li><a href="http://www.liv.ac.uk/library/e-library/index.html">The Electronic Library</a></li>
+              <li><a href="http://www.liv.ac.uk/library/ohecampus/">Laureate Library</a></li>
+
+                  
+            </ul>                 
+	       
+ 
+    </div>
+    <!-- left-hand-nav ends -->
+    
+<!-- CSD Permanent links box -->
+<div class="extras-box">
+<h3>Links</h3>
+			<ul>
+					<li><a href="http://www.liv.ac.uk/csd/students/induction/index.htm">Student IT Quickstart</a></li>
+					<li><a href="http://www.liv.ac.uk/csd/azservices/index.htm">A-Z index</a></li>
+					<li><a href="http://www.liv.ac.uk/csd/comments/index.htm">Comments &amp; Questions</a></li>
+			</ul>
+</div> 
+            
+<!-- No UniversityLinks -->
+		  
+<!-- No WebLinks -->
+		  
+<!-- No Extras -->
+ 
+</div>
+<!-- left-hand-column ends -->          
+ 
+<!-- main-content begins - wide version -->
+ 
+<div id="main-content" class="wide">
+		   <h2 id="main_content_title">EZProxy Remote Services Menu</h2>
+      
+		 <!-- Summary block -->
+		             <p class="summary">
+		             
+		  To use the EZProxy service from outside campus you must authenticate. <br /><br />
+		  Please enter your <a href="http://www.liv.ac.uk/csd/mws/index.htm">MWS</a> username and password below:
+</p>
+		             <!-- End Summary block -->
+					
+		    <!-- Copy block -->
+		           
+	  <form action="/login" method="post">
+	    <input type="hidden" name="url" value="http://www.sciencedirect.com/sd/grey_pxl.gif" />
+	      <table>
+		<tr>
+		  <td>Enter your MWS username:</td> <td><input type="text"     name="user" /></td>
+
+		</tr>
+		<tr>
+		  <td><br>Enter your MWS password:</td> <td><br><input type="password" name="pass" /></td>
+		</tr>
+		<tr height="60" id="spacingrow">
+			<td><input type="submit" value="Login" /></td><td></td>
+		</tr>
+	      </table>
+	  </form>
+
+
+                Click the following link to have &quot;Guest Access&quot; to
+		<a href="http://www.sciencedirect.com/sd/grey_pxl.gif">&lt;http://www.sciencedirect.com/sd/grey_pxl.gif&gt;</a>
+		
+<br>		<a href="http://www.liv.ac.uk/library/electron/offcampus.html">Return to Library Off-Campus Access Page</a>
+
+		             <!-- End Copy block -->
+	     
+</div>
+<!-- main-content ends -->
+ 
+<!-- No RightColumn -->
+   
+<!-- footer begins -->
+    <div id="footer-new">
+		<p class="address">University of Liverpool<br />Liverpool L69 3BX<br />United Kingdom<br />+44 (0)151 794 2000</p>
+		<p class="footer-centre">&copy; The University of Liverpool - a member of <a href="http://www.russellgroup.ac.uk/">The Russell Group</a><br />
+		<a href="http://www.liv.ac.uk/contacts/">Contacts</a> | <a href="http://www.liv.ac.uk/maps/">Map</a> | <a href="http://www.liv.ac.uk/legal/">Legal</a> | <a href="http://www.liv.ac.uk/accessibility/">Accessibility</a></p>
+    </div>
+    <!-- footer ends -->
+</div>
+<!-- container ends -->
+ 
+<script type="text/javascript"> 
+<!--
+var TabbedPanels1 = new Spry.Widget.TabbedPanels("TabbedPanels1");
+//-->
+</script>
+	   
+</body>
+</html>
+

@@ -1,0 +1,153 @@
+﻿(function(){
+var CM8CE = (window.CM8E && CM8E['social_science_humanities.language_linguistics.fla']) || {};
+var CM8CES = (CM8CE.serialsData && CM8CE.serialsData[1000]) || {};
+if (CM8CE.requestReceived)
+	CM8CE.requestReceived(1000, [], '3563,9,283,1,282,1,280,28,118,1,116,223,104,7,103,18,43,3,32,0,', '', 'D');
+
+function CM8MultiDo1() {
+document.write("<SPAN ID='CM8BWE_B1553092BCAA'>");
+	
+	var bwPlaceHolder = null;
+	if ((typeof(CM8CES) != "undefined") && CM8CES.CM8BWSTF_630499)
+		bwPlaceHolder = CM8CES.CM8BWSTF_630499(document.getElementById("CM8BWE_B1553092BCAA"));
+
+	if (window.CM8E && CM8E['social_science_humanities.language_linguistics.fla'])
+			CM8E['social_science_humanities.language_linguistics.fla'].bannerShowing(1000,document.getElementById("CM8BWE_B1553092BCAA"),
+					"column3_160x140_top",630499,bwPlaceHolder);document.write("<A HREF='http://sage.checkm8.com/adam/em/click/630499/cat=58429/uhook=B1553092BCAA/criterias=32_0_43_3_103_18_104_7_116_223_118_1_280_28_282_1_283_1_3563_9_' target='_blank'><IMG  SRC='http://sagedigital.checkm8.com/data/630499/OpenAccess-160x140.gif' BORDER=0   WIDTH='160' HEIGHT='140'></A>");
+
+document.write("</SPAN><!-- CM8BWE_B1553092BCAA -->");
+
+	var placeHoldersForCleanup = (typeof(CM8CE) == 'undefined') ? [] : (CM8CE.placeHolders || []);
+for (var placeHolderIndex = 0; placeHolderIndex < placeHoldersForCleanup.length; placeHolderIndex++) {
+	var placeHolderForCleanup = placeHoldersForCleanup[placeHolderIndex];
+	if (((typeof(CM8CES) == 'undefined') || (placeHolderForCleanup.serial == CM8CES.serial)) && (placeHolderForCleanup.adId == 630499)) {
+		(function(){
+			var origCleanup = placeHolderForCleanup.cleanup;
+			placeHolderForCleanup.cleanup = function () {
+				if (origCleanup)
+					origCleanup.call(this);
+var wrapper = document.getElementById("CM8BWE_B1553092BCAA");
+			
+			if (wrapper)
+				wrapper.parentNode.removeChild(wrapper);
+			};
+		})();
+		break;
+	};
+};
+
+
+	if ((typeof(CM8CES) != "undefined") && CM8CES.CM8BWADF_630499)
+		CM8CES.CM8BWADF_630499(document.getElementById("CM8BWE_B1553092BCAA"));
+}
+
+function CM8MultiDo2() {
+document.write("<SPAN ID='CM8BWE_CD6ECBD20DE4'>");
+	
+	var bwPlaceHolder = null;
+	if ((typeof(CM8CES) != "undefined") && CM8CES.CM8BWSTF_630507)
+		bwPlaceHolder = CM8CES.CM8BWSTF_630507(document.getElementById("CM8BWE_CD6ECBD20DE4"));
+
+	if (window.CM8E && CM8E['social_science_humanities.language_linguistics.fla'])
+			CM8E['social_science_humanities.language_linguistics.fla'].bannerShowing(1000,document.getElementById("CM8BWE_CD6ECBD20DE4"),
+					"homepage_rectangle_right",630507,bwPlaceHolder);document.write("<A HREF='http://sage.checkm8.com/adam/em/click/630507/cat=58429/uhook=CD6ECBD20DE4/criterias=32_0_43_3_103_18_104_7_116_223_118_1_280_28_282_1_283_1_3563_9_' target='_blank'><IMG  SRC='http://sagedigital.checkm8.com/data/630507/OpenAccess-300x100.gif' BORDER=0   WIDTH='300' HEIGHT='100'></A>");
+
+document.write("</SPAN><!-- CM8BWE_CD6ECBD20DE4 -->");
+
+	var placeHoldersForCleanup = (typeof(CM8CE) == 'undefined') ? [] : (CM8CE.placeHolders || []);
+for (var placeHolderIndex = 0; placeHolderIndex < placeHoldersForCleanup.length; placeHolderIndex++) {
+	var placeHolderForCleanup = placeHoldersForCleanup[placeHolderIndex];
+	if (((typeof(CM8CES) == 'undefined') || (placeHolderForCleanup.serial == CM8CES.serial)) && (placeHolderForCleanup.adId == 630507)) {
+		(function(){
+			var origCleanup = placeHolderForCleanup.cleanup;
+			placeHolderForCleanup.cleanup = function () {
+				if (origCleanup)
+					origCleanup.call(this);
+var wrapper = document.getElementById("CM8BWE_CD6ECBD20DE4");
+			
+			if (wrapper)
+				wrapper.parentNode.removeChild(wrapper);
+			};
+		})();
+		break;
+	};
+};
+
+
+	if ((typeof(CM8CES) != "undefined") && CM8CES.CM8BWADF_630507)
+		CM8CES.CM8BWADF_630507(document.getElementById("CM8BWE_CD6ECBD20DE4"));
+}
+
+function CM8MultiDo3() {
+document.write("<SPAN ID='CM8BWE_D98767235D2F'>");
+	
+	var bwPlaceHolder = null;
+	if ((typeof(CM8CES) != "undefined") && CM8CES.CM8BWSTF_463029)
+		bwPlaceHolder = CM8CES.CM8BWSTF_463029(document.getElementById("CM8BWE_D98767235D2F"));
+
+	if (window.CM8E && CM8E['social_science_humanities.language_linguistics.fla'])
+			CM8E['social_science_humanities.language_linguistics.fla'].bannerShowing(1000,document.getElementById("CM8BWE_D98767235D2F"),
+					"column3_160x140_bottom",463029,bwPlaceHolder);document.write("<A HREF='http://sage.checkm8.com/adam/em/click/463029/cat=58429/uhook=D98767235D2F/criterias=32_0_43_3_103_18_104_7_116_223_118_1_280_28_282_1_283_1_3563_9_' target='_blank'><IMG  SRC='http://sagedigital.checkm8.com/data/463029/SSS_160x140.gif' BORDER=0   WIDTH='160' HEIGHT='140'></A>");
+
+document.write("</SPAN><!-- CM8BWE_D98767235D2F -->");
+
+	var placeHoldersForCleanup = (typeof(CM8CE) == 'undefined') ? [] : (CM8CE.placeHolders || []);
+for (var placeHolderIndex = 0; placeHolderIndex < placeHoldersForCleanup.length; placeHolderIndex++) {
+	var placeHolderForCleanup = placeHoldersForCleanup[placeHolderIndex];
+	if (((typeof(CM8CES) == 'undefined') || (placeHolderForCleanup.serial == CM8CES.serial)) && (placeHolderForCleanup.adId == 463029)) {
+		(function(){
+			var origCleanup = placeHolderForCleanup.cleanup;
+			placeHolderForCleanup.cleanup = function () {
+				if (origCleanup)
+					origCleanup.call(this);
+var wrapper = document.getElementById("CM8BWE_D98767235D2F");
+			
+			if (wrapper)
+				wrapper.parentNode.removeChild(wrapper);
+			};
+		})();
+		break;
+	};
+};
+
+
+	if ((typeof(CM8CES) != "undefined") && CM8CES.CM8BWADF_463029)
+		CM8CES.CM8BWADF_463029(document.getElementById("CM8BWE_D98767235D2F"));
+}
+
+CM8CES.CM8Titles=[
+	['Leaderboard',8432, 1, 0, []],
+	['skyscraper',8436, 1, 0, []],
+	['column3_160x140_top',8438, 1, 0, [[CM8MultiDo1,630499,'UUU']]],
+	['homepage_rectangle_right',8435, 1, 0, [[CM8MultiDo2,630507,'UUU']]],
+	['column3_160x140_bottom',8439, 1, 0, [[CM8MultiDo3,463029,'UUU']]]];
+var CM8CheckErrorsAlreadyCalled=false;
+function CM8CheckErrors() {
+	if (CM8CheckErrorsAlreadyCalled)
+		return;
+	CM8CheckErrorsAlreadyCalled=true;
+	var A='';  CM8CE.sumPHsOf1Call();
+	for (var B=0;typeof(CM8CES.CM8Titles[B])!='undefined';B++) {
+		var E=''; var D=CM8CES.CM8Titles[B]; var F=D[4];
+		for (var C=0;typeof(F[C])!='undefined';C++) {
+			if (!F[C].used) {
+				E+=','+F[C][1]+'/'+F[C][2];
+			}
+		}
+		if (D[3]<D[2]) {
+			A+='&F'+D[1]+','+D[2]+','+D[3]+E;
+		}
+	}
+	if (A!='') {
+		CM8CE.report = new Image();
+		CM8CE.report.src='http://sage.checkm8.com/adam/report?58429&'+CM8CE.page+'&'+CM8GetLocation()+'&1370583995&Y&32_0_43_3_103_18_104_7_116_223_118_1_280_28_282_1_283_1_3563_9_'+A;
+	}
+}
+if (window.addEventListener)
+	window.addEventListener('load', CM8CheckErrors, false);
+else if(document.addEventListener)
+	document.addEventListener('load', CM8CheckErrors, false);
+else if(window.attachEvent)
+	window.attachEvent('onload', CM8CheckErrors);
+
+})();
